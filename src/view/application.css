@@ -1,0 +1,135 @@
+/* JavaFX CSS - Leave this comment until you have at least create one rule which uses -fx-Property */
+
+#vbox
+{
+	-fx-padding: 5.0 5.0 5.0 5.0;
+	-fx-spacing: 130.0;
+}
+
+#top-hbox
+{
+	-fx-padding: 5.0 5.0 5.0 5.0;
+	-fx-spacing: 130.0;
+}
+
+#panetable
+{
+	-fx-padding: 10.0 10.0 10.0 10.0;
+	-fx-content-display: top;
+  	-fx-border-insets: 20.0 15.0 15.0 15.0;
+}
+
+#vbox1
+{
+	-fx-padding: 0.0 10.0 10.0 10.0;
+	-fx-border-insets: 10.0 10.0 10.0 10.0;
+}
+
+#vbox2
+{
+	-fx-padding: 10.0 0.0 10.0 0.0;
+	-fx-alignment: center;
+}
+
+#title
+{
+	-fx-background-color: gray;
+}
+
+#pane
+{
+	-fx-border-color: #D3D3D3;
+	-fx-border-insets: 0.0 10.0 10.0 0.0;
+}
+
+#rating-text-field-panel
+{
+	-fx-padding: 10.0 115.0 10.0 115.0;
+	-fx-spacing: 10.0;
+  	-fx-border-insets: 20.0 15.0 15.0 15.0;
+}
+
+#add-remove-buttons-pane
+{
+	-fx-spacing: 230.0;
+}
+
+#current-episode-button
+{
+	-fx-padding: 5.0 10.0 3.0 10.0;
+}
+
+#rating-and-finished-vbox
+{
+	-fx-alignment: center;
+	-fx-spacing: 5.0;
+}
+
+#pane-table-center
+{
+	-fx-padding: 0.0 30.0 0.0 30.0;
+}
+
+#add-remove-category-panel
+{
+	-fx-padding: 0.0 10.0 0.0 0.0;
+	-fx-spacing: 10.0;
+}
+
+#current-episode-label
+{
+	-fx-pref-width: 40.0;
+	-fx-alignment: center
+}
+
+#rating-text-field
+{
+	-fx-max-width: 170.0;
+	-fx-alignment: center
+}
+
+#search-text-field
+{
+	-fx-pref-width: 250.0
+}
+
+#pane5
+{
+	-fx-padding: 0.0 10.0 5.0 10.0;
+}
+
+#rating-pane
+{
+	-fx-spacing: 10.0;
+	-fx-alignment: center;
+}
+
+#author
+{
+	-fx-padding: 10.0 0.0 0.0 0.0;
+}
+
+#season-and-episode-label
+{
+	-fx-padding: 8.2 0.0 0.0 0.0;
+}
+
+#status-label
+{
+	-fx-padding: 7.5 0.0 0.0 0.0;
+}
+
+#name
+{
+	-fx-padding: 7.5 0.0 0.0 0.0;
+}
+
+#green-background
+{
+	 -fx-background-color: #90EE90;
+}
+
+#red-background
+{
+	 -fx-background-color: #F08080;
+}

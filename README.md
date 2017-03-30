@@ -39,6 +39,7 @@ The tool also gives the opportunity to add or delete a category by `Add new cate
 The search bar allows us to easier find an entity by simply typing its name inside it. The search goes as follows:
 * firstly, it looks for the actual entity
 * secondly, if the first condition is not met, it looks for entities that contain the search value
+* if the search returns no results at all, the search bar background will get colored to red
 
 If the second phase takes place, after the entities are found, they are retrieved in a combo box just in the right of the search bar, so the user have all the entities that match that search result, as in the print below:
 

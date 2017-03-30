@@ -27,7 +27,7 @@ public class Controller {
 	static Connection connection = null;
 
 	/**
-	 * Initializing the driver used for connecting to the database.
+	 * Initializes the driver used for connecting to the database.
 	 */
 	public static void initializeDriver() {
 		try {
@@ -423,7 +423,14 @@ public class Controller {
 		}
 		return affectedRows > 0 ? true : false;
 	}
-
+	
+	/**
+	 * Changes the name of the given entity.
+	 * 
+	 * @param entity
+	 * @param name
+	 * @return true or false
+	 */
 	public static boolean changeName(Entity entity, String name) {
 		int ID = getEntityID(entity.name);
 		initializeDriver();

@@ -133,3 +133,9 @@
 {
 	 -fx-background-color: #F08080;
 }
+
+#search-red-background
+{
+	 -fx-background-color: #F08080;
+	 -fx-pref-width: 250.0;
+}

@@ -116,7 +116,7 @@ public class View extends Application {
 						@Override
 						public void changed(ObservableValue<? extends String> observable, String oldValue,
 								String newValue) {
-							if (newValue != null) // have to find a workaround asap
+							if (entities.getItems().size() > 0)
 							{
 								Entity entity = Controller.getDetails(newValue);
 								addToCenterPane(entity, pane);
@@ -159,8 +159,7 @@ public class View extends Application {
 			root.setLeft(pane2);
 			root.setRight(pane3);
 			root.setTop(pane4);
-
-			root.setBottom(pane5); //asta e
+			root.setBottom(pane5);
 
 			primaryStage.setScene(scene);
 			primaryStage.show();
@@ -244,15 +243,26 @@ public class View extends Application {
 			@Override
 			public void handle(KeyEvent keyEvent) {
 				if (keyEvent.getCode().equals(KeyCode.ENTER)) {
-					if (Controller.changeName(entity, nameTextFieldEast.getText())) {
-						entities.getItems().set(entities.getSelectionModel().getSelectedIndex(), nameTextFieldEast.getText());
-						entities.getSelectionModel().select(nameTextFieldEast.getText());
-						nameTextFieldEast.requestFocus();
-						nameTextFieldEast.positionCaret(nameTextFieldEast.getText().length());
-						nameTextFieldEast.setId("green-background");
+					String newName = nameTextFieldEast.getText();
+					if (newName.trim().length() > 0 ) {
+						if (Controller.getEntityID(newName) == 0) {
+							if (Controller.changeName(entity, newName)) {
+								entities.getItems().set(entities.getSelectionModel().getSelectedIndex(), newName);
+								entities.getSelectionModel().select(newName);
+								nameTextFieldEast.requestFocus();
+								nameTextFieldEast.positionCaret(newName.length());
+								nameTextFieldEast.setId("green-background");
+							} else {
+								nameTextFieldEast.setId("red-background");
+							}
+						} else {
+							nameTextFieldEast.setId("red-background");
+							alert(Constants.ENTITY_EXISTS);
+						}
 					} else {
 						nameTextFieldEast.setId("red-background");
-					}
+						alert(Constants.NO_EMPTY_STRING);
+					}		
 				}	
 			}
 		});
@@ -347,8 +357,8 @@ public class View extends Application {
 	 * 
 	 * @param entity
 	 *            the entity alongside its details
-	 * @return the components which includes the rating and markAsFinished
-	 *         button
+	 * @return ratingAndFinished 
+	 			  the component which includes the rating and markAsFinished button
 	 */
 	public VBox ratingAndMarkAsFinished(Entity entity) {
 		Button finished = new Button("Mark as finished");
@@ -402,19 +412,21 @@ public class View extends Application {
 		Optional<String> result = dialog.showAndWait();
 		
 		if (result.isPresent()) {
-			String entityName = result.get();
-			String categoryName = category.getValue();
-			Entity entity = new Entity(entityName, Constants.ON_AIR, 0, 1, 0, Controller.getCurrentDate(), Constants.CURRENTLY_WATCHING,
-					Controller.getCategoryID(categoryName));
+			if (result.get().trim().length() > 0) {
+				String entityName = result.get();
+				String categoryName = category.getValue();
+				Entity entity = new Entity(entityName, Constants.ON_AIR, 0, 1, 0, Controller.getCurrentDate(), Constants.CURRENTLY_WATCHING, Controller.getCategoryID(categoryName));
 
-			if (Controller.entityExists(entity)) {
-				Alert alert = new Alert(AlertType.WARNING);
-				alert.setContentText(Constants.ENTITY_EXISTS);
-				alert.showAndWait();
-				addEntity();
+				if (Controller.entityExists(entity)) {
+					alert(Constants.ENTITY_EXISTS);
+					addEntity();
+				} else {
+					Controller.addEntity(entity, categoryName);
+					entities.getItems().add(entityName);
+				}
 			} else {
-				Controller.addEntity(entity, categoryName);
-				entities.getItems().add(entityName);
+				alert(Constants.NO_EMPTY_STRING);
+				addEntity();
 			}
 		}
 	}
@@ -428,19 +440,21 @@ public class View extends Application {
 		dialog.setHeaderText(Constants.INFO_REQUIRED);
 		dialog.setContentText(Constants.NEW_CATEGORY_NAME);
 		Optional<String> result = dialog.showAndWait();
-
+		
 		if (result.isPresent()) {
-			String categoryName = result.get();
-
-			if (Controller.categoryExists(categoryName)) {
-				Alert alert = new Alert(AlertType.WARNING);
-				alert.setContentText(Constants.CATEGORY_EXISTS);
-				alert.showAndWait();
-				addCategoryWindow();
+			if (result.get().trim().length() > 0) {
+				String categoryName = result.get();
+				if (Controller.categoryExists(categoryName)) {
+					alert(Constants.CATEGORY_EXISTS);
+					addCategoryWindow();
+				} else {
+					category.getItems().add(category.getItems().size(), categoryName);
+					Controller.addCategory(categoryName);
+					category.getSelectionModel().select(categoryName);
+				}
 			} else {
-				category.getItems().add(category.getItems().size(), categoryName);
-				Controller.addCategory(categoryName);
-				category.getSelectionModel().select(categoryName);
+				alert(Constants.NO_EMPTY_STRING);
+				addCategoryWindow();
 			}
 		}
 	}
@@ -560,7 +574,7 @@ public class View extends Application {
 	 *            the entity alongside its details
 	 * @param category
 	 *            the category the new entity should be linked with
-	 * @return - HBox
+	 * @return HBox
 	 */
 	public HBox currentEpisodeLabel(Entity entity, String category) {
 		currentEpisodeTextField = new TextField(String.valueOf(entity.currentEpisode));
@@ -630,7 +644,7 @@ public class View extends Application {
 		rating.ratingProperty().addListener(new ChangeListener<Number>() {
 			@Override
 			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-				if (newValue != null && !newValue.equals("") && newValue.toString().matches("^([0-4](\\.)[0-9]*)|((5)(\\.)(0))$")) {
+				if (!newValue.equals("") && newValue.toString().matches("^([0-4](\\.)[0-9]*)|((5)(\\.)(0))$")) {
 					ratingLabelEast.setText(String.valueOf(Double.parseDouble(String.valueOf(newValue).substring(0, 3)) * 2));
 					ratingTextField.setText(String.valueOf(Double.parseDouble((newValue.toString().substring(0, 3))) * 2));
 
@@ -640,9 +654,8 @@ public class View extends Application {
 		});
 
 		ratingTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-			if (newValue != null && !newValue.equals("")
-								 && newValue.toString().matches("^([0-9])|([0-9](\\.)[0-9]*)|(10)$")
-								 && Double.parseDouble(newValue) <= 10) {
+			if (!newValue.equals("") && newValue.toString().matches("^([0-9])|([0-9](\\.)[0-9]*)|(10)$")
+								     && Double.parseDouble(newValue) <= 10) {
 				double newRating = 0;
 
 				if (newValue.toString().length() == 1) {
@@ -664,9 +677,9 @@ public class View extends Application {
 	}
 
 	/**
-	 * Create the search facility.
+	 * Creates the search facility.
 	 * 
-	 * @return the search texfield
+	 * @return the search bar
 	 */
 	public static TextField search() {
 		TextField search = new TextField();
@@ -676,6 +689,7 @@ public class View extends Application {
 		search.setOnKeyPressed(new EventHandler<KeyEvent>() {
 			@Override
 			public void handle(KeyEvent keyEvent) {
+				search.setId("search-text-field");
 				String searchEntity = search.getText();
 				if (keyEvent.getCode() == KeyCode.ENTER) {
 					if (pane5.getChildren().size() > 1) {
@@ -697,9 +711,7 @@ public class View extends Application {
 						});
 						
 						if (results.getItems().size() == 0) {
-							Alert alert = new Alert(AlertType.ERROR);
-							alert.setContentText(Constants.FAILED_SEARCH);
-							alert.showAndWait();
+							search.setId("search-red-background");
 						} else if (results.getItems().size() == 1) {
 							entities.getSelectionModel().select(results.getItems().get(0));
 							entities.scrollTo(entities.getSelectionModel().getSelectedIndex());
@@ -720,15 +732,16 @@ public class View extends Application {
 	 * The combo box with the hints after the search is done and returns to exact entity.
 	 * 
 	 * @param searchEntity
-	 * @return
+	 * @return hints
 	 */
 	public static ComboBox<String> searchHint(String searchEntity) {
 		ComboBox<String> hints = new ComboBox<String>();
 		
 		for (int i = 0; i < entities.getItems().size(); i ++) {
-			if (entities.getItems().get(i).contains(searchEntity) |
+			if (searchEntity.trim().length() > 0 &&
+				(entities.getItems().get(i).contains(searchEntity) |
 				entities.getItems().get(i).toUpperCase().contains(searchEntity) |
-				entities.getItems().get(i).toLowerCase().contains(searchEntity)) {
+				entities.getItems().get(i).toLowerCase().contains(searchEntity))) {
 				hints.getItems().add(entities.getItems().get(i));
 			}
 		}
@@ -787,6 +800,12 @@ public class View extends Application {
 		ratingTextField.setDisable(true);
 		currentSeasonTextField.setDisable(true);
 		currentEpisodeTextField.setDisable(true);
+	}
+	
+	public static void alert(String message) {
+		Alert alert = new Alert(AlertType.WARNING);
+		alert.setContentText(message);
+		alert.showAndWait();
 	}
 
 	/**
